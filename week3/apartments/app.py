@@ -6,15 +6,15 @@ import joblib
 model = joblib.load("apartment_price_model.pkl")
 
 # Vorhersage-Funktion
-def predict_price(rooms, area, distance_to_lake, room_per_m2, price_per_m2, luxurious, temporary, furnished, 
-                  luxurios, pool, seesicht, exklusiv, attika, loft):
+def predict_price(rooms, area, distance_to_lake, pop, pop_dens, frg_pct, emp, tax_income, room_per_m2, price_per_m2, 
+                  luxurious, temporary, furnished, luxurios, pool, seesicht, exklusiv, attika, loft):
     try:
         # Checkboxes (True/False) zu 1/0 konvertieren
         categorical_features = [luxurious, temporary, furnished, luxurios, pool, seesicht, exklusiv, attika, loft]
         categorical_features = [1 if feature else 0 for feature in categorical_features]
 
-        # Eingabearray erstellen
-        input_data = np.array([[distance_to_lake, rooms, area, room_per_m2, price_per_m2] + categorical_features])
+        # Eingabearray erstellen (Jetzt mit allen Features)
+        input_data = np.array([[distance_to_lake, rooms, area, pop, pop_dens, frg_pct, emp, tax_income, room_per_m2, price_per_m2] + categorical_features])
 
         prediction = model.predict(input_data)
         return f"Estimated Price: {prediction[0]:,.2f} CHF"
@@ -29,6 +29,11 @@ iface = gr.Interface(
         gr.Number(label="Rooms"),
         gr.Number(label="Area (m²)"),
         gr.Number(label="Distance to Lake Zurich (km)"),
+        gr.Number(label="Population"),
+        gr.Number(label="Population Density"),
+        gr.Number(label="Foreigners Percentage"),
+        gr.Number(label="Employment Rate"),
+        gr.Number(label="Taxable Income"),
         gr.Number(label="Room per m²"),
         gr.Number(label="Price per m²"),
         gr.Checkbox(label="Luxurious"),
